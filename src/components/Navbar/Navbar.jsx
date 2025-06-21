@@ -9,10 +9,9 @@ import {
 import logo from '../../assets/images/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import Button from '../Button/Button';
 import { useNavigate } from 'react-router-dom';
 
-const Navbar = ({ navItems, button }) => {
+const Navbar = ({ navItems }) => {
   const [navBG, setNavBG] = useState(false);
   const [openBox, setOpenBox] = useState(false);
   const searchRef = useRef();
@@ -63,11 +62,7 @@ const Navbar = ({ navItems, button }) => {
         <div id="notification">
           <FontAwesomeIcon icon={faBell} />
         </div>
-        {button?.map((item, index) => (
-          <Button key={index} onClick={item.callBack}>
-            {item.name}
-          </Button>
-        ))}
+        {/* The Sign In button and button prop are fully removed */}
       </NavLeft>
     </Wrapper>
   );
