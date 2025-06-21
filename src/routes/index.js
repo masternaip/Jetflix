@@ -1,6 +1,12 @@
-import HomePage from '../pages/HomePage/HomePage';
+import React from "react";
+import { Route, Routes } from "react-router-dom";
+import HomePage from "../pages/HomePage/HomePage"; // adjust the path if needed
 
-<Routes>
-  <Route path="/" element={<HomePage />} />
-  {/* You can add additional public routes here */}
-</Routes>
+const PageRouting = () => (
+  <Routes>
+    <Route path="/" element={<HomePage />} />
+    {/* Add other public routes if you want */}
+  </Routes>
+);
+
+export default PageRouting;
