@@ -17,8 +17,6 @@ import MovieSection from '../../components/MovieSection/MovieSection';
 import { Button, Footer } from '../../components';
 import MovieDetail from '../../components/MovieDetail/MovieDetail';
 import YouTube from 'react-youtube';
-import { useDispatch, useSelector } from 'react-redux';
-import { addVideos, setMovie, setTrailer } from '../../redux/index';
 import Loader from './Loader/Loader';
 
 const HomePage = () => {
@@ -30,9 +28,12 @@ const HomePage = () => {
   const [buttonClick, setClick] = useState(true);
   const [scaleHeight, setScaleHeight] = useState(0);
 
+  // Local replacements for Redux state
+  const [movie, setMovie] = useState(null);
+  const [videos, setVideos] = useState([]);
+  const [trailer, setTrailer] = useState(null);
+
   const { fetchTopRated, fetchPopular, fetchUpcoming } = fetchData;
-  const trailer = useSelector((state) => state.trailer);
-  const dispatch = useDispatch();
   const wrapperRef = useRef();
 
   const [opts] = useState({
@@ -47,27 +48,25 @@ const HomePage = () => {
   const playTrailer = () => {
     setPlay(true);
     setScaleHeight(document.getElementById('trailer-description')?.clientHeight);
-    console.log(wrapperRef.current.offsetWidth);
     if (buttonClick && player) {
       player.playVideo();
-      console.log(document.getElementById('trailer-description').clientHeight);
       document.getElementById('trailer-title').classList.add('scaleDownTitle');
       document.getElementById('trailer-description').classList.add('scaleDownDescription');
       setClick((prev) => !prev);
-    } else {
+    } else if (player) {
       player.pauseVideo();
       setClick((prev) => !prev);
     }
   };
 
   const renderTrailer = () => {
-    const trailer = trailerVideo.results[0];
-    if (trailer) {
+    const trailerResult = trailerVideo?.results?.[0];
+    if (trailerResult) {
       return (
         <YouTube
-          videoId={trailer.key}
+          videoId={trailerResult.key}
           id={'trailer-ytb'}
-          title={'Aloasdasd'}
+          title={trailerResult.name}
           opts={opts}
           onReady={(event) => setPlayer(event.target)}
           onEnd={(event) => {
@@ -84,19 +83,21 @@ const HomePage = () => {
   };
 
   const handleTrailerDetail = async () => {
+    if (!trailer) return;
     const detailRes = await axios.get(`${BASE_URL}/movie/${trailer.id}?api_key=${API_KEY}`);
-    dispatch(setMovie(detailRes.data));
+    setMovie(detailRes.data);
     const videoRes = await axios.get(`${BASE_URL}/movie/${detailRes.data.id}/videos`, {
       params: {
         api_key: API_KEY,
         append_to_response: 'videos'
       }
     });
-    dispatch(addVideos(videoRes.data.results));
+    setVideos(videoRes.data.results);
     setOpen(true);
   };
 
   useEffect(() => {
+    // Pick a random movie to use as a trailer
     const randomTrailer = Math.floor((Math.random() + 100) * 100);
 
     const fetchTrailer = async () => {
@@ -106,8 +107,7 @@ const HomePage = () => {
             api_key: API_KEY
           }
         });
-        dispatch(setTrailer(res.data));
-        console.log(res);
+        setTrailer(res.data);
       } catch (error) {
         console.log(error);
       }
@@ -121,7 +121,7 @@ const HomePage = () => {
             append_to_response: 'videos'
           }
         });
-        await setTrailerVideo(res.data);
+        setTrailerVideo(res.data);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -135,14 +135,14 @@ const HomePage = () => {
   return (
     <>
       <Wrapper scaleHeight={scaleHeight} ref={wrapperRef}>
-        {open && <MovieDetail open={open} setOpen={setOpen} />}
+        {open && <MovieDetail open={open} setOpen={setOpen} movie={movie} videos={videos} />}
 
         {loading ? (
           <Loader />
         ) : (
           <>
             <Trailer play={play}>
-              <img src={`${base_img_url}${trailer?.backdrop_path}`} />
+              <img src={trailer?.backdrop_path ? `${base_img_url}${trailer.backdrop_path}` : ""} alt={trailer?.title} />
               <div className="img-overlay"></div>
               {trailerVideo && renderTrailer()}
               <TrailerOverlay />
