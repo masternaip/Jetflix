@@ -1,7 +1,7 @@
 export const base_img_url = 'https://image.tmdb.org/t/p/original';
 
 export const BASE_URL = 'https://api.themoviedb.org/3';
-export const API_KEY = '0b33eb3e3c720c76ff1d4df99841953b';
+export const API_KEY = 'a1e72fd93ed59f56e6332813b9f8dcae';
 
 export const fetchData = {
   fetchLatest: `${BASE_URL}/movie/latest?api_key=${API_KEY}`,
