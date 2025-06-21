@@ -28,7 +28,7 @@ const HomePage = () => {
   const [buttonClick, setClick] = useState(true);
   const [scaleHeight, setScaleHeight] = useState(0);
 
-  // Local replacements for Redux state
+  // Use local React state instead of Redux
   const [movie, setMovie] = useState(null);
   const [videos, setVideos] = useState([]);
   const [trailer, setTrailer] = useState(null);
@@ -136,7 +136,6 @@ const HomePage = () => {
     <>
       <Wrapper scaleHeight={scaleHeight} ref={wrapperRef}>
         {open && <MovieDetail open={open} setOpen={setOpen} movie={movie} videos={videos} />}
-
         {loading ? (
           <Loader />
         ) : (
@@ -171,7 +170,6 @@ const HomePage = () => {
             </MovieListContainer>
           </>
         )}
-
         <Footer />
       </Wrapper>
     </>
